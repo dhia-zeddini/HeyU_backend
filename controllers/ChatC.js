@@ -7,37 +7,44 @@ exports.accessChat = async (req, res) => {
   if (!userId) {
     return res.status(400).send("user id is required");
   }
-  var isChat = await ChatM.find({
-    isGroupeChat: false,
-    $and: [
-      { users: { $elemMatch: { $eq: req.user._id } } },
-      { users: { $elemMatch: { $eq: userId } } },
-    ],
-  })
-    .populate("users", "-password")
-    .populate("messages");
-  isChat = await UserM.populate(isChat, {
-    path: "messages.sender",
-    select: "username phoneNumber avatar",
-  });
-  if (isChat.length > 0) {
-    res.send(isChat[0]);
-  } else {
-    var chatData = {
-      chatName: req.user._id,
-      isGroupeChat: false,
-      users: [req.user._id, userId],
-    };
+  reciver=await UserM.findById(userId);
+  console.log(reciver);
+  if(!reciver){
+    return res.status(400).send("user dosn't exist");
+  }else{
 
-    try {
-      const createdChat = await ChatM.create(chatData);
-      const fullChat = await ChatM.findOne({ _id: createdChat._id }).populate(
-        "users",
-        "-password"
-      );
-      res.status(200).json(fullChat);
-    } catch (error) {
-      res.status(400).json("faild to create chat");
+    var isChat = await ChatM.find({
+      isGroupeChat: false,
+      $and: [
+        { users: { $elemMatch: { $eq: req.user._id } } },
+        { users: { $elemMatch: { $eq: userId } } },
+      ],
+    });
+    //   .populate("users", "-password")
+    //   .populate("messages");
+    // isChat = await UserM.populate(isChat, {
+    //   path: "messages.sender",
+    //   select: "username phoneNumber avatar",
+    // });
+    if (isChat.length > 0) {
+      res.send(isChat[0]);
+    } else {
+      var chatData = {
+        chatName: reciver.phoneNumber,
+        isGroupeChat: false,
+        users: [req.user._id, userId],
+      };
+  
+      try {
+        const createdChat = await ChatM.create(chatData);
+        // const fullChat = await ChatM.findOne({ _id: createdChat._id }).populate(
+        //   "users",
+        //   "-password"
+        // );
+        res.status(200).json(createdChat);
+      } catch (error) {
+        res.status(400).json("faild to create chat");
+      }
     }
   }
 };
@@ -45,7 +52,7 @@ exports.accessChat = async (req, res) => {
 exports.getChat = async (req, res) => {
   // console.log("user chat:", req.user._id);
   try {
-    ChatM.find({
+    results=ChatM.find({
       users: { $elemMatch: { $eq: req.user._id } },
       deleted: { $ne: req.user._id },
       archives: { $ne: req.user._id }

@@ -4,22 +4,22 @@ const mongoose= require('mongoose');
 
 
 
-const verifyToken=(req,res,next)=>{
-    const authHeader=req.headers.token;
-    if(authHeader){
-        const token=authHeader.split(' ')[1];
-        jwt.verify(token,'secretKey',async(err,user)=>{
-            if(err) res.status(403).json({message:"Invalid Token"});
-            req.user=user;
-
-            // console.log(user);
-            next();
-            
-        });
-    }else{
-        return res.sendStatus(401).json("you are not authenticated");
-    }
+const verifyToken = (req, res, next) => {
+  const authHeader = req.headers.token;
+  if (authHeader) {
+    const token = authHeader.split(" ")[1];
+    jwt.verify(token, "secretKey", async (err, user) => {
+      if (err) {
+        return res.status(403).json({ message: "Invalid Token" }); // Ajout du mot clé "return" ici pour éviter l'envoi multiple de réponses
+      }
+      req.user = user;
+      next();
+    });
+  } else {
+    return res.status(401).json("You are not authenticated"); // Ajout du mot clé "return" ici pour éviter l'envoi multiple de réponses
+  }
 };
+
 
 
 const verifyAndAuth = (req, res, next) => {

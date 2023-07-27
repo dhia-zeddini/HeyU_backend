@@ -23,12 +23,12 @@ const chatSchema = new Schema(
         }],
         theme: {
             type: String,
-            default:""
+            default:"#ffffff"
             
         },
-        wallpapaer: {
+        wallpaper: {
             type: String,
-            default:""
+            default:"wallpaper.png"
             
         },
         

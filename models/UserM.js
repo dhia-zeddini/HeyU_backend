@@ -41,14 +41,15 @@ const userSchema = new Schema(
     },
     lastSeen: {
       type: Date,
-      required: true,
+      
     },
     online: {
       type: Boolean,
-      required: true,
+      
     },
     forgetPwd: {
       type: String,
+      
     },
     contacts: [
       {
