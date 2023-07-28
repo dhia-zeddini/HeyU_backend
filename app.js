@@ -5,6 +5,7 @@ const authRoute =require('./routes/authR') ;
 const UserRoute =require('./routes/UserR') ;
 const ChatRoute =require('./routes/ChatR') ;
 const MessageRoute =require('./routes/MessageR') ;
+const path = require('path');
 
 const app = express();
 const PORT= process.env.PORT || 9090;
@@ -14,6 +15,7 @@ app.use('/',authRoute);
 app.use('/user',UserRoute);
 app.use('/chats',ChatRoute);
 app.use('/messages',MessageRoute);
+app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.get('/',(req,res)=>{

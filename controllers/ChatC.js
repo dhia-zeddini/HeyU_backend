@@ -57,7 +57,7 @@ exports.getChat = async (req, res) => {
       deleted: { $ne: req.user._id },
       archives: { $ne: req.user._id }
     })
-      .populate("users", "-password")
+      .populate("users", "-__V")
       .populate("messages")
       .sort({ updatedAt: -1 })
       .then(async (results) => {
