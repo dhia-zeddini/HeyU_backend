@@ -28,7 +28,7 @@ const chatSchema = new Schema(
         },
         wallpaper: {
             type: String,
-            default:"wallpaper.png"
+            default:"wallpaper.jpeg"
             
         },
         

@@ -10,11 +10,11 @@ exports.getAllMessages = async (req, res) => {
     const skipMessages=(page-1)*pageSize;
 
     var messages =await Message.find({chatId: req.params.id})
-        .populate("sender","username phoneNumber avatar")
-        .populate('chatId')
-        .sort({createdAt:-1})
+         .populate("sender","username phoneNumber avatar")
+        // .populate('chatId')
+        //.sort({createdAt:-1})
         .skip(skipMessages)
-        .limit(pageSize);
+        //.limit(pageSize);
         messages=await UserM.populate(messages,{
             path:"chatId.users",
             select: "username phoneNumber avatar",
@@ -28,7 +28,7 @@ exports.getAllMessages = async (req, res) => {
 exports.sendMessage=async(req,res)=>{
     const{content,chatId,receiverId}= req.body;
     if(!content|| !chatId){
-        console.log('invalid data');
+        // console.log('invalid data');
         return res.status(400).json("invalid data");
     }
     var newMessage={
@@ -44,18 +44,17 @@ exports.sendMessage=async(req,res)=>{
         var message= new Message(newMessage);
         // console.log(message)
         await message.save();
-        console.log("message");
+        // console.log("message");
         message=await message.populate("sender","username phoneNumber avatar");
 
-        message=await message.populate("chatId");
+        // message=await message.populate("chatId");
         message=await UserM.populate(message,{
             path:"chatId.users",
             select: "username phoneNumber avatar",
         });
         // console.log(message);
-
         await ChatM.findByIdAndUpdate(req.body.chatId,{messages:message});
-        console.log(message);
+        // console.log(message);
         res.json(message);
     } catch (error) {
         console.log(error);
