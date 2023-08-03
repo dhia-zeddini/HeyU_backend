@@ -5,6 +5,7 @@ const authRoute = require("./routes/authR");
 const UserRoute = require("./routes/UserR");
 const ChatRoute = require("./routes/ChatR");
 const MessageRoute = require("./routes/MessageR");
+const ContactRoute=require("./routes/ContactR");
 const path = require("path");
 const { Socket } = require("socket.io");
 const { log } = require("console");
@@ -17,6 +18,7 @@ app.use("/", authRoute);
 app.use("/user", UserRoute);
 app.use("/chats", ChatRoute);
 app.use("/messages", MessageRoute);
+app.use("/contact", ContactRoute);
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res) => {
@@ -47,11 +49,13 @@ io.on("connection",(Socket)=>{
 
   Socket.on('typing',(receiverId)=>{
     console.log("typing");
-    clients[receiverId].emit('typing',receiverId);
+    if (clients[receiverId] )
+        clients[receiverId].emit('typing',receiverId);
   });
   Socket.on('stop typing',(receiverId)=>{
     console.log("stop typing");
-    clients[receiverId].emit('stop typing',receiverId);
+    if (clients[receiverId] )
+        clients[receiverId].emit('stop typing',receiverId);
   });
 
   Socket.on('join chat',(room)=>{

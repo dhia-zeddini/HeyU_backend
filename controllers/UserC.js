@@ -203,3 +203,26 @@ exports.unblockContact = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+exports.getUserContacts = async (req, res) => {
+  console.log(req.body);
+  console.log(req.user._id);
+  try {
+    const userId = req.user._id;
+    const contacts = await UserM.findById(userId).populate("contacts");
+    console.log(contacts['contacts']);
+    res.status(200).json(contacts['contacts']);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// var messages =await Message.find({chatId: req.params.id})
+//          .populate("sender","username phoneNumber avatar")
+//         // .populate('chatId')
+//         //.sort({createdAt:-1})
+//         .skip(skipMessages)
+//         //.limit(pageSize);
+//         messages=await UserM.populate(messages,{
+//             path:"chatId.users",
+//             select: "username phoneNumber avatar",
+//         });
