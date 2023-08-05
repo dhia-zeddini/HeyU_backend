@@ -51,10 +51,9 @@ exports.login = async (req, res, next) => {
       res.status(401).json("user dose not exist");
     }
     const isMatch = await UserService.comparePassword(password, user.password);
-
     if (isMatch === false) {
       // throw new Error('Invalid password');
-      res.status(401).json("Invalid password");
+      res.status(401).json("Invalid passworddd");
     }
 
     const tokenData = { _id: user._id, phoneNumber: user.phoneNumber };

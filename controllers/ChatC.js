@@ -7,26 +7,25 @@ exports.accessChat = async (req, res) => {
   if (!userId) {
     return res.status(400).send("user id is required");
   }
-  reciver=await UserM.findById(userId);
-  console.log(reciver);
-  if(!reciver){
+  reciver = await UserM.findById(userId);
+  if (!reciver) {
     return res.status(400).send("user dosn't exist");
-  }else{
-
+  } else {
     var isChat = await ChatM.find({
       isGroupeChat: false,
       $and: [
         { users: { $elemMatch: { $eq: req.user._id } } },
         { users: { $elemMatch: { $eq: userId } } },
       ],
+    })
+      .populate("users", "-__V")
+      .populate("messages");
+    isChat = await UserM.populate(isChat, {
+      path: "messages.sender",
+      select: "username phoneNumber avatar",
     });
-    //   .populate("users", "-password")
-    //   .populate("messages");
-    // isChat = await UserM.populate(isChat, {
-    //   path: "messages.sender",
-    //   select: "username phoneNumber avatar",
-    // });
     if (isChat.length > 0) {
+      console.log(isChat);
       res.send(isChat[0]);
     } else {
       var chatData = {
@@ -34,14 +33,19 @@ exports.accessChat = async (req, res) => {
         isGroupeChat: false,
         users: [req.user._id, userId],
       };
-  
+
       try {
         const createdChat = await ChatM.create(chatData);
-        // const fullChat = await ChatM.findOne({ _id: createdChat._id }).populate(
-        //   "users",
-        //   "-password"
-        // );
-        res.status(200).json(createdChat);
+        console.log(createdChat._id);
+        const fullChat = await ChatM.findOne({ _id: createdChat._id })
+          .populate("users", "-__V")
+          .populate("messages");
+        //   fullChat = await UserM.populate(fullChat, {
+        //   path: "messages.sender",
+        //   select: "username phoneNumber avatar",
+        // });
+        console.log(fullChat);
+        res.status(200).json(fullChat);
       } catch (error) {
         res.status(400).json("faild to create chat");
       }
@@ -52,10 +56,10 @@ exports.accessChat = async (req, res) => {
 exports.getChat = async (req, res) => {
   // console.log("user chat:", req.user._id);
   try {
-    results=ChatM.find({
+    results = ChatM.find({
       users: { $elemMatch: { $eq: req.user._id } },
       deleted: { $ne: req.user._id },
-      archives: { $ne: req.user._id }
+      archives: { $ne: req.user._id },
     })
       .populate("users", "-__V")
       .populate("messages")
@@ -90,7 +94,7 @@ exports.getChat = async (req, res) => {
 exports.getArchive = async (req, res) => {
   try {
     ChatM.find({
-      archives: { $elemMatch: { $eq: req.user._id } }
+      archives: { $elemMatch: { $eq: req.user._id } },
     })
       .populate("users", "-password")
       .populate("messages")
@@ -168,34 +172,34 @@ exports.archiveChat = async (req, res) => {
   }
 };
 
-exports.changeTheme=async(req, res) =>{
+exports.changeTheme = async (req, res) => {
   try {
-    const chat= await ChatM.findByIdAndUpdate(req.params.id,{theme:req.body.theme});
-    
+    const chat = await ChatM.findByIdAndUpdate(req.params.id, {
+      theme: req.body.theme,
+    });
+
     if (!chat) {
       // throw new Error('chat not found');
-    res.status(404).json({ message: "chat not found"});
-
-    }else{
-      res.status(200).json({ message: 'chat theme changed successfully' });
+      res.status(404).json({ message: "chat not found" });
+    } else {
+      res.status(200).json({ message: "chat theme changed successfully" });
     }
-
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
-exports.changeWallpaper=async(req, res) =>{
+exports.changeWallpaper = async (req, res) => {
   try {
-    const chat= await ChatM.findByIdAndUpdate(req.params.id,{wallpapaer:req.body.wallpapaer});
-    
+    const chat = await ChatM.findByIdAndUpdate(req.params.id, {
+      wallpapaer: req.body.wallpapaer,
+    });
+
     if (!chat) {
       // throw new Error('chat not found');
-    res.status(404).json({ message: "chat not found"});
-
-    }else{
-      res.status(200).json({ message: 'chat wallpaper changed successfully' });
+      res.status(404).json({ message: "chat not found" });
+    } else {
+      res.status(200).json({ message: "chat wallpaper changed successfully" });
     }
-
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

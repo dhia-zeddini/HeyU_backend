@@ -113,7 +113,7 @@ exports.addContactToUser = async (req, res) => {
     }
 
     const contact = await UserM.findById(contactId);
-    console.log(contact);
+  
     if (!contact) {
       // throw new Error('Contact not found');
       res.status(404).json({ message: "Contact not found" });
@@ -204,12 +204,10 @@ exports.unblockContact = async (req, res) => {
   }
 };
 exports.getUserContacts = async (req, res) => {
-  console.log(req.body);
-  console.log(req.user._id);
+  
   try {
     const userId = req.user._id;
     const contacts = await UserM.findById(userId).populate("contacts");
-    console.log(contacts['contacts']);
     res.status(200).json(contacts['contacts']);
   } catch (error) {
     res.status(500).json({ error: error.message });
