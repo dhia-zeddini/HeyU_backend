@@ -13,6 +13,10 @@ const messageSchema = new Schema(
       type: String,
       required: true
     },
+    mediaPath: {
+      type: String,
+      default:""
+    },
     receiverId: {
       type: Schema.Types.ObjectId,
       ref: 'User', 
