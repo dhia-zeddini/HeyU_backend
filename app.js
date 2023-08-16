@@ -42,7 +42,8 @@ io.on("connection",(Socket)=>{
   Socket.on('setup',(userId)=>{
     Socket.join(userId);
     Socket.broadcast.emit('online-user',userId);
-    console.log(userId);
+    // console.log(userId);
+    // console.log(Socket)
     clients[userId]=Socket;
     // console.log(clients);
   });
@@ -85,7 +86,7 @@ io.on("connection",(Socket)=>{
     // if(clients[chat]){
     //   clients[chat].emit('new message',newMessageReceived);
     // }
-    console.log(clients[receiverId]);
+    //console.log(clients[receiverId]);
 
     if (clients[receiverId] ) {
       clients[receiverId].emit('new message', newMessageReceived);
@@ -94,7 +95,7 @@ io.on("connection",(Socket)=>{
     }
     // Socket.emit('new message',"New Message");
     console.log("new message "+room);
-    console.log(newMessageReceived);
+    // console.log(newMessageReceived);
   });
 
 Socket.off('setup',()=>{
