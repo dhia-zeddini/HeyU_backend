@@ -35,91 +35,90 @@ exports.getAllMessages = async (req, res) => {
   }
 };
 
+// exports.sendMessage = async (req, res) => {
+//   const { content, chatId, receiverId } = req.body;
+//   console.log(req.body);
+//   if (!content || !chatId) {
+//     // console.log('invalid data');
+//     return res.status(400).json("invalid data");
+//   }
+//   var newMessage = {
+//     sender: req.user._id,
+//     content: content,
+//     receiverId: receiverId,
+//     chatId: chatId,
+//   };
+//   // console.log(newMessage);
+
+//   try {
+//     // console.log(newMessage)
+//     var message = new Message(newMessage);
+//     // console.log(message)
+//     await message.save();
+//     // console.log("message");
+//     message = await message.populate("sender", "username phoneNumber avatar");
+
+//     // message=await message.populate("chatId");
+//     message = await UserM.populate(message, {
+//       path: "chatId.users",
+//       select: "username phoneNumber avatar",
+//     });
+//     // console.log(message);
+//     await ChatM.findByIdAndUpdate(req.body.chatId, { messages: message });
+//     // console.log(message);
+//     res.json(message);
+//   } catch (error) {
+//     console.log(error);
+//     res.status(400).json({ error: error.message });
+//   }
+// };
+exports.sendImg = (req, res) => {
+  console.log("test");
+  try {
+    // console.log(req);
+    res.json({ path: req.file.filename });
+    console.log("working");
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({ error: e.message });
+  }
+};
+
 exports.sendMessage = async (req, res) => {
   const { content, chatId, receiverId } = req.body;
-  console.log(req.body);
+  console.log(req.file);
+  // Access the uploaded image file using req.file
+  //const uploadedImage = req.file;
   if (!content || !chatId) {
-    // console.log('invalid data');
     return res.status(400).json("invalid data");
   }
+  // if (req.file) {
+  //   path = req.file.path;
+  // }
   var newMessage = {
     sender: req.user._id,
     content: content,
     receiverId: receiverId,
     chatId: chatId,
+    mediaPath: req.file?.filename, // Save the image file path
   };
-  // console.log(newMessage);
 
   try {
-    // console.log(newMessage)
     var message = new Message(newMessage);
-    // console.log(message)
     await message.save();
-    // console.log("message");
     message = await message.populate("sender", "username phoneNumber avatar");
-
-    // message=await message.populate("chatId");
     message = await UserM.populate(message, {
       path: "chatId.users",
       select: "username phoneNumber avatar",
     });
-    // console.log(message);
+
     await ChatM.findByIdAndUpdate(req.body.chatId, { messages: message });
-    // console.log(message);
     res.json(message);
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: error.message });
   }
 };
-exports.sendImg = (req, res) => {
-    console.log("test");
-    try {
-      console.log(req);
-      res.json({ path: req.file.filename });
-      console.log("working");
-    } catch (e) {
-      console.log(e);
-      res.status(400).json({ error: e.message });
-    }
-  };
-
-// exports.sendMessage = upload.single('media'), async (req, res) => {
-//     const { content, chatId, receiverId } = req.body;
-//     console.log(req.body);
-//     // Access the uploaded image file using req.file
-//     const uploadedImage = req.file;
-
-//     console.log(req.body);
-
-//     if (!content || !chatId) {
-//         return res.status(400).json("invalid data");
-//     }
-
-//     var newMessage = {
-//         sender: req.user._id,
-//         content: content,
-//         receiverId: receiverId,
-//         chatId: chatId,
-//         mediaPath: uploadedImage.path // Save the image file path
-//     };
-
-//     try {
-//         var message = new Message(newMessage);
-//         await message.save();
-//         message = await message.populate("sender", "username phoneNumber avatar");
-//         message = await UserM.populate(message, {
-//             path: "chatId.users",
-//             select: "username phoneNumber avatar",
-//         });
-
-//         await ChatM.findByIdAndUpdate(req.body.chatId, { messages: message });
-//         res.json(message);
-//     } catch (error) {
-//         console.log(error);
-//         res.status(400).json({ error: error.message });
-//     }
-// };
 
 // exports.sendMessage = async (req, res) => {
 //     try {

@@ -11,7 +11,6 @@ exports.register = async (req, res, next) => {
       phoneNumber,
       password,
       about,
-      avatar,
       lastSeen,
       online,
       forgetPwd,
@@ -24,7 +23,7 @@ exports.register = async (req, res, next) => {
       phoneNumber,
       password,
       about,
-      avatar,
+      req.file?.filename,
       lastSeen,
       online,
       forgetPwd
