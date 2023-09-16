@@ -1,5 +1,18 @@
 const UserM = require("../models/UserM");
 const UserService = require("../services/UserS");
+const nodemailer = require("nodemailer");
+const {html}=require("../utils/mailTemplate");
+let testaccount = nodemailer.createTestAccount();
+const transporter = nodemailer.createTransport({
+  host: "sandbox.smtp.mailtrap.io",
+  port: 2525,
+  secure: false,
+  auth: {
+    // TODO: replace `user` and `pass` values from <https://forwardemail.net>
+    user: "953442e4512364",
+    pass: "6f65e90db3f543",
+  },
+});
 
 exports.register = async (req, res, next) => {
   try {
@@ -31,11 +44,13 @@ exports.register = async (req, res, next) => {
     res.json({ status: true, success: "User Registered" });
   } catch (error) {
     if (error.keyPattern) {
+      console.log("Error", error);
       res.status(403).json({
         status: false,
         error: Object.keys(error.keyPattern)[0] + " already used",
       });
     } else {
+      console.log("err", error);
       res.status(500).json({ status: false, error: "Internal Server Error" });
     }
   }
@@ -82,13 +97,35 @@ exports.forgetPwd = async (req, res) => {
       res.status(404).json({ message: "user not found" });
     } else {
       await user.updateOne({ forgetPwd: random });
-      const tokenData = { _id: user._id, phoneNumber: user.phoneNumber,code:user.forgetPwd };
+      const tokenData = {
+        _id: user._id,
+        email: user.email,
+        code: user.forgetPwd,
+      };
       const token = await UserService.generateToken(
         tokenData,
         "secretKey",
         "5h"
       );
-      res.status(200).json({ message: "code generated successfully", token: token });
+       await transporter
+        .sendMail({
+          from: '"HeyU 👻" <heyU@example.com>', // sender address
+          to: user.email, // list of receivers
+          subject: "Reset your password", // Subject line
+          //text: html, // plain text body
+          html: "<h1><strong>Hi! dhia</strong></h1><h3>We have received a request to reset your password.</h3>Verification code:"+random, 
+        })
+        .then(() => {
+          console.log("Message sent: %s");
+          console.log("html",html);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      res
+        .status(200)
+        .json({ status: true, token: token });
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -101,9 +138,9 @@ exports.newPwd = async (req, res) => {
       res.status(403).json({ message: "You have to confirm your password" });
     } else {
       const user = await UserM.findOneAndUpdate(
-        { _id: req.user._id }, 
-        { password: req.body.newPwd }, 
-        { new: true } 
+        { _id: req.user._id },
+        { password: req.body.newPwd },
+        { new: true }
       );
       if (!user) {
         res.status(404).json({ message: "User not found" });
@@ -116,4 +153,3 @@ exports.newPwd = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
