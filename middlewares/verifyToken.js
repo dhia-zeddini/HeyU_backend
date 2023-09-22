@@ -43,7 +43,8 @@ const verifyAndAuth = (req, res, next) => {
 
 const verifyForgetPwd = (req, res, next) => {
   verifyToken(req, res, () => {
-    // console.log("token :",  req.user.code);
+    console.log("token :",  req.user);
+    console.log("code :",  req.body.code);
     const code = req.user.code;
     const paramCode = req.body.code;
     if (code.trim()===paramCode.trim()) {

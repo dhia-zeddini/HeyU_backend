@@ -47,12 +47,7 @@ exports.updateAccount = async (req, res) => {
       userName,
       email,
       phoneNumber,
-      password,
-      about,
       avatar,
-      lastSeen,
-      online,
-      forgetPwd,
     } = req.body;
 
     const newUser = {
@@ -61,12 +56,8 @@ exports.updateAccount = async (req, res) => {
       userName,
       email,
       phoneNumber,
-      password,
-      about,
       avatar,
-      lastSeen,
-      online,
-      forgetPwd,
+      
     };
 
     await UserM.findByIdAndUpdate(req.user._id, newUser);
@@ -87,7 +78,7 @@ exports.deleteUser = async (req, res) => {
 };
 exports.getUser = async (req, res) => {
   try {
-    const user = await UserM.findByIdAndDelete(req.params.id);
+    const user = await UserM.findById(req.user._id);
     res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ error: error.message });

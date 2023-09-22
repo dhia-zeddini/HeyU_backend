@@ -100,8 +100,9 @@ exports.forgetPwd = async (req, res) => {
       const tokenData = {
         _id: user._id,
         email: user.email,
-        code: user.forgetPwd,
+        code: random,
       };
+      console.log("token code",random);
       const token = await UserService.generateToken(
         tokenData,
         "secretKey",
@@ -135,17 +136,17 @@ exports.forgetPwd = async (req, res) => {
 exports.newPwd = async (req, res) => {
   try {
     if (req.body.newPwd !== req.body.confirmPwd) {
-      res.status(403).json({ message: "You have to confirm your password" });
+      res.status(403).json("You have to confirm your password" );
     } else {
       const user = await UserM.findOneAndUpdate(
         { _id: req.user._id },
-        { password: req.body.newPwd },
+        { password: req.body.newPwd ,forgetPwd: null},
         { new: true }
       );
       if (!user) {
-        res.status(404).json({ message: "User not found" });
+        res.status(404).json("User not found" );
       } else {
-        res.status(200).json({ message: "Password updated successfully" });
+        res.status(200).json("Password updated successfully" );
       }
     }
   } catch (error) {

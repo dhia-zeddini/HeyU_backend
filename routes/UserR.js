@@ -9,7 +9,7 @@ const {verifyToken,verifyAndAuth}=require('../middlewares/verifyToken');
 router.put('/:id',verifyAndAuth,UserController.updateUser);
 router.put('/',verifyToken,UserController.updateAccount);
 router.delete('/:id',verifyAndAuth,UserController.deleteUser);
-router.get('/:id',UserController.getUser);
+router.get('/profile',verifyToken,UserController.getUser);
 router.get('/',UserController.getAllUsers);
 router.put('/contacts/:contactId',verifyToken,UserController.addContactToUser);
 router.delete('/removeContact/:contactId',verifyToken,UserController.removeContactFromUser);
